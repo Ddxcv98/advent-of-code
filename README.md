@@ -13,4 +13,4 @@ An archive with my solutions to the annual edition of [Advent of Code](https://a
 | 2019 | 0%         |
 | 2020 | 0%         |
 | 2021 | 0%         |
-| 2022 | 44%        |
+| 2022 | 48%        |
