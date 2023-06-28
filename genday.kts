@@ -17,12 +17,12 @@ val problemContent = """package %s
 import IProblem
 
 class Problem : IProblem {
-    override fun part1() {
-        TODO("Not yet implemented")
+    override fun part1(): Int {
+        return 0
     }
 
-    override fun part2() {
-        TODO("Not yet implemented")
+    override fun part2(): Int {
+        return 0
     }
 }
 """
@@ -37,12 +37,12 @@ class ProblemTest {
 
     @Test
     fun part1() {
-        assertEquals(, problem.part1())
+        assertEquals(0, problem.part1())
     }
 
     @Test
     fun part2() {
-        assertEquals(, problem.part2())
+        assertEquals(0, problem.part2())
     }
 }
 """
