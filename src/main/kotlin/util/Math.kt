@@ -1,5 +1,15 @@
 package util
 
+infix fun Int.`^`(e: Int): Long {
+    var r = 1L
+
+    for (i in 0 until e) {
+        r *= this
+    }
+
+    return r
+}
+
 fun intSqrt(n: Int): Int {
     if (n <= 1) {
         return n
