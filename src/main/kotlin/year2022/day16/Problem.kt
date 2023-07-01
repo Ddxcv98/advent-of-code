@@ -64,7 +64,7 @@ class Problem : IProblem {
         }
     }
 
-    private fun maxFlow(source: Valve, time: Int, closed: Set<Valve>): Int {
+    private fun maxFlow(source: Valve, time: Int, closed: Collection<Valve>): Int {
         if (time > TIME) {
             return 0
         }
@@ -72,56 +72,58 @@ class Problem : IProblem {
         var flow = 0
 
         for (dest in closed) {
-            val copy = closed.toMutableSet()
-            copy.remove(dest)
+            val copy = closed.toMutableSet().also { it.remove(dest) }
             flow = max(flow, maxFlow(dest, time + dist[source.id][dest.id] + 1, copy))
         }
 
         return source.rate * (TIME - time) + flow
     }
 
-    private fun assignedValves(list: List<Valve>, mask: UInt): Sequence<Valve> {
-        return sequence {
-            val iterator = list.iterator()
-            var i = mask
-
-             while (i != 0U) {
-                 val valve = iterator.next()
-
-                 if (i and 1U == 1U) {
-                     yield(valve)
-                 }
-
-                 i = i shr 1
-             }
+    private fun allPaths(source: Valve, time: Int, closed: Collection<Valve>, flow: Int, path: List<Valve>, paths: MutableList<Pair<Int, List<Valve>>>) {
+        if (time > TIME) {
+            return
         }
+
+        val flow0 = flow + source.rate * (TIME - time)
+
+        for (dest in closed) {
+            val time0 = time + dist[source.id][dest.id] + 1
+            val closed0 = closed.toMutableSet().also { it.remove(dest) }
+            val path0 = path.toMutableList().also { it.add(dest) }
+            allPaths(dest, time0, closed0, flow0, path0, paths)
+        }
+
+        paths.add(Pair(flow0, path))
     }
 
     override fun part1(): Int {
         val start = valves[START]!!
-        val closed = valves
-            .values
-            .filter { it.rate != 0 }
-            .toSet()
-
+        val closed = valves.values.filter { it.rate != 0 }
         return maxFlow(start, 0, closed)
     }
 
     override fun part2(): Int {
         val start = valves[START]!!
-        val closed = valves
-            .values
-            .filter { it.rate != 0 }
-            .toList()
-
-        val n = closed.size
-        val mask = 1U shl n
+        val closed = valves.values.filter { it.rate != 0 }
+        val paths = mutableListOf<Pair<Int, List<Valve>>>()
         var flow = 0
 
-        for (i in 0U until mask / 2U) {
-            val me = assignedValves(closed, i).toSet()
-            val el = assignedValves(closed, (mask - 1U) and i.inv()).toSet()
-            flow = max(flow, maxFlow(start, 4, me) + maxFlow(start, 4, el))
+        allPaths(start, 4, closed, 0, listOf(), paths)
+
+        paths.sortByDescending(Pair<Int, List<Valve>>::first)
+
+        for (i in paths.indices) {
+            val s = paths[i].second.toSet()
+
+            for (j in i + 1 until paths.size) {
+                if (paths[i].first + paths[j].first <= flow) {
+                    break
+                }
+
+                if (paths[j].second.none { it in s }) {
+                   flow = paths[i].first + paths[j].first
+                }
+            }
         }
 
         return flow
