@@ -1,8 +1,6 @@
 import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-@OptIn(ExperimentalTime::class)
 fun solve(troubleMaker: () -> IProblem) {
     val (problem, t0) = measureTimedValue(troubleMaker)
     val (res1, t1) = measureTimedValue(problem::part1)
